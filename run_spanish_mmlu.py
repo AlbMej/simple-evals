@@ -1,4 +1,5 @@
 import json
+import os
 
 import pandas as pd
 
@@ -14,35 +15,15 @@ from .sampler.o_chat_completion_sampler import OChatCompletionSampler
 
 def main():
     debug = True
+    # Set environment variables to point to your local vLLM server
+    os.environ["OPENAI_BASE_URL"] = "http://localhost:8801/v1"
+    os.environ["OPENAI_API_KEY"] = "dummy-key"  # An api key is required
+
     samplers = {
-        "gpt-4o_chatgpt": ChatCompletionSampler(
-            model="gpt-4o",
-            system_message=OPENAI_SYSTEM_MESSAGE_CHATGPT,
-            max_tokens=2048,
+        "my_local_qwen2": ChatCompletionSampler(
+            model="Qwen/Qwen2-0.5B-Instruct",  # model identifier for the API server
         ),
-        "gpt-4o-mini-2024-07-18": ChatCompletionSampler(
-            model="gpt-4o-mini-2024-07-18",
-            system_message=OPENAI_SYSTEM_MESSAGE_API,
-            max_tokens=2048,
-        ),
-        "o1-preview": OChatCompletionSampler(
-            model="o1-preview",
-        ),
-        "o1-mini": OChatCompletionSampler(
-            model="o1-mini",
-        ),
-        # Default == Medium
-        "o3-mini": OChatCompletionSampler(
-            model="o3-mini",
-        ),
-        "o3-mini_high": OChatCompletionSampler(
-            model="o3-mini",
-            reasoning_effort="high",
-        ),
-        "o3-mini_low": OChatCompletionSampler(
-            model="o3-mini",
-            reasoning_effort="low",
-        ),
+
     }
 
     def get_evals(eval_name):
@@ -83,21 +64,7 @@ def main():
     evals = {
         eval_name: get_evals(eval_name)
         for eval_name in [
-            "mmlu_AR-XY",
-            "mmlu_BN-BD",
-            "mmlu_DE-DE",
-            "mmlu_EN-US",
             "mmlu_ES-LA",
-            "mmlu_FR-FR",
-            "mmlu_HI-IN",
-            "mmlu_ID-ID",
-            "mmlu_IT-IT",
-            "mmlu_JA-JP",
-            "mmlu_KO-KR",
-            "mmlu_PT-BR",
-            "mmlu_ZH-CN",
-            "mmlu_SW-KE",
-            "mmlu_YO-NG",
         ]
     }
     print(evals)
@@ -128,7 +95,7 @@ def main():
             continue
         result = result.get("f1_score", result.get("score", None))
         eval_name = eval_sampler_name[: eval_sampler_name.find("_")]
-        sampler_name = eval_sampler_name[eval_sampler_name.find("_") + 1:]
+        sampler_name = eval_sampler_name[eval_sampler_name.find("_") + 1 :]
         merge_metrics.append(
             {"eval_name": eval_name, "sampler_name": sampler_name, "metric": result}
         )

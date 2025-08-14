@@ -5,7 +5,6 @@ Message = dict[str, Any]  # keys role, content
 MessageList = list[Message]
 
 
-
 @dataclass
 class SamplerResponse:
     """
@@ -14,6 +13,7 @@ class SamplerResponse:
     response_text: str
     actual_queried_message_list: MessageList
     response_metadata: dict[str, Any]
+
 
 class SamplerBase:
     """
@@ -63,4 +63,3 @@ class Eval:
 
     def __call__(self, sampler: SamplerBase) -> EvalResult:
         raise NotImplementedError
-

@@ -140,3 +140,7 @@ This will launch evaluations through the OpenAI API.
 
 ## Legal Stuff
 By contributing to evals, you are agreeing to make your evaluation logic and data under the same MIT license as this repository. You must have adequate rights to upload any data used in an eval. OpenAI reserves the right to use this data in future service improvements to our product. Contributions to OpenAI evals will be subject to our usual Usage Policies: https://platform.openai.com/docs/usage-policies.
+
+# Repo Modifications
+- Renamed `types.py` to `eval_types.py` to avoid import error when running vLLM. Specifcally, `ImportError: cannot import name 'MappingProxyType' from partially initialized module 'types' (most likely due to a circular import)`
+- Created `run_spanish_mmlu.py` to run a specified local model (through a vLLM server) against the Spanish MMLU data. 
