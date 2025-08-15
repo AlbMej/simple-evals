@@ -14,7 +14,7 @@ from .sampler.o_chat_completion_sampler import OChatCompletionSampler
 
 
 def main():
-    debug = True
+    debug = True  # Set to False to run on full MMLU set for specified language
     # Set environment variables to point to your local vLLM server
     os.environ["OPENAI_BASE_URL"] = "http://localhost:8801/v1"
     os.environ["OPENAI_API_KEY"] = "dummy-key"  # An api key is required

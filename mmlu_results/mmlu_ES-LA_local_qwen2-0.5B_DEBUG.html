@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .message {
+                padding: 8px 16px;
+                margin-bottom: 8px;
+                border-radius: 4px;
+            }
+            .message.user {
+                background-color: #B2DFDB;
+                color: #00695C;
+            }
+            .message.assistant {
+                background-color: #B39DDB;
+                color: #4527A0;
+            }
+            .message.system {
+                background-color: #EEEEEE;
+                color: #212121;
+            }
+            .role {
+                font-weight: bold;
+                margin-bottom: 4px;
+            }
+            .variant {
+                color: #795548;
+            }
+            table, th, td {
+                border: 1px solid black;
+            }
+            pre {
+                white-space: pre-wrap;
+            }
+        </style>
+    </head>
+    <body>
+    
+    <h1>Metrics</h1>
+    <table>
+    <tr>
+        <th>Metric</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+        <td><b>Score</b></td>
+        <td>0.1</td>
+    </tr>
+    
+    <tr>
+        <td>other</td>
+        <td>0.2</td>
+    </tr>
+    
+    <tr>
+        <td>other:std</td>
+        <td>0.4000000000000001</td>
+    </tr>
+    
+    <tr>
+        <td>score:std</td>
+        <td>0.30000000000000004</td>
+    </tr>
+    
+    <tr>
+        <td>stem</td>
+        <td>0.0</td>
+    </tr>
+    
+    <tr>
+        <td>stem:std</td>
+        <td>0.0</td>
+    </tr>
+    
+    <tr>
+        <td>humanities</td>
+        <td>0.0</td>
+    </tr>
+    
+    <tr>
+        <td>humanities:std</td>
+        <td>0.0</td>
+    </tr>
+    
+    <tr>
+        <td>social_sciences</td>
+        <td>0.0</td>
+    </tr>
+    
+    <tr>
+        <td>social_sciences:std</td>
+        <td>0.0</td>
+    </tr>
+    
+    </table>
+    
+    <h1>Examples</h1>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+¿En qué consiste la vacuna eficaz contra el VPH?
+
+A) Es una vacuna atenuada elaborada con microbios vivos por mutagénesis específica
+B) Es un vacuna inactivada químicamente y elaborada con microbios enteros
+C) Consiste en el autoensamblaje de la proteína L1 del virus en partículas similivirales
+D) Es una vacuna de subunidades inactivada químicamente</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>La respuesta es A, &#34;Es una vacuna atenuada elaborada con microbios vivos por mutagénesis específica&#34;.</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: A</p>
+<p>Extracted Answer: None</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+La mujer que efectuó un estudio longitudinal sobre sí misma y encontró una mayor dificultad de recuperación a medida que envejecía se llamaba…
+
+A) Clark
+B) Smith
+C) Whitebear
+D) Ebbinghaus</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>The answer to this question is D) Ebbinghaus. This is because Ebbinghaus was a German psychologist who conducted a study on aging and found that older adults had more difficulty in recovering from injuries than younger adults, which led him to call it &#34;the old age blues.&#34;</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: B</p>
+<p>Extracted Answer: None</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+Una mujer de 75 años se presenta en el consultorio para hacerse un examen de control. Dice que siente más cansancio que cuando tenía 65 años, pero que todavía hace jardinería y conduce hasta el supermercado. Los análisis de laboratorio de rutina indican un recuento de leucocitos de 25,0 x 103/µl (intervalo de referencia: 4,5-11,0 × 103/µl) y 97 % de linfocitos de apariencia madura en una muestra de sangre periférica. Las tinciones inmunohistoquímicas muestran que los linfocitos se forman a partir de células B. El diagnóstico más probable es el siguiente:
+
+A) Leucemia linfocítica aguda
+B) Leucemia mieloide aguda
+C) Leucemia linfocítica crónica
+D) Leucemia mieloide crónica</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>Answer: C) Leucemia linfocítica crónica
+
+La respuesta es A porque la descripción del paciente indica que tiene más cansancio que cuando tenía 65 años, lo cual sugiere que su condición puede ser relacionada con una enfermedad o condición médica relacionada con el sistema inmunitario. Además, menciona que realiza jardinería y conduce al supermercado, lo que podría sugerir que tiene una condición de salud respiratoria o cardiovascular. Por lo tanto, se puede inferir que tiene una condición de leucemia linfocítica crónica.</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: C</p>
+<p>Extracted Answer: C</p>
+<p>Score: 1.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+¿Cuál de los siguientes es un algoritmo de agrupamiento espacial?
+
+A) Agrupamiento basado en particiones
+B) Agrupamiento de K-medias
+C) Agrupamiento basado en rejillas
+D) todas las opciones anteriores</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>A) Agrupamiento basado en particiones</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: D</p>
+<p>Extracted Answer: None</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+¿Qué hay que asegurarse antes de utilizar una válvula fonatoria?
+
+A) Que el paciente pueda tragar de forma adecuada.
+B) Que hayan transcurrido siete días desde la primera inserción de la cánula de traqueostomía.
+C) Que el manguito esté desinflado.
+D) Que el manguito esté inflado.</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>La respuesta correcta es A) Que el paciente pueda tragar de forma adecuada.</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: C</p>
+<p>Extracted Answer: None</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+Supongamos que el gráfico de f es creciente y cóncavo en &lt;= x &lt;= b. Entonces, usando la misma cantidad de subdivisiones y si L, R, M y T denotan, respectivamente, las sumas de izquierda, derecha, punto medio y trapezoide, se desprende que
+
+A) R &lt;= T &lt;= M &lt;= L
+B) L &lt;= T &lt;= M &lt;= R
+C) R &lt;= M &lt;= T &lt;= L
+D) L &lt;= M &lt;= T &lt;= R</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>The answer to the multiple-choice question is B) L &lt;= T &lt;= M &lt;= R. This can be deduced from the given information about the graph of the function g(x) = f(x) = 1/x^2 on the interval [x, b] and the fact that the graphs of the functions L(x), R(x), M(x), and T(x) are all decreasing on this interval. Since the graph of g(x) is increasing on the interval [x, b], it follows that L(x) must also be increasing on this interval, and similarly for the other three functions. Therefore, L(x) = 0 at x = b, which implies that L(x) = 0 at x = b - 1, b/2, b/3, etc., so L(x) = 0 when x = b - 1, b/2, b/3, etc. Similarly, R(x) = 0 at x = b + 1, b/2, b/3, etc., so R(x) = 0 when x = b + 1, b/2, b/3, etc. Finally, M(x) = 0 at x = b, so M(x) = 0 when x = b. Therefore, the graph of L(x), R(x), M(x), and T(x) must lie above the graph of g(x) in the interval [x, b].</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: D</p>
+<p>Extracted Answer: None</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+En respuesta al terrorismo, dice Walzer, es particularmente importante que
+
+A) hagamos un esfuerzo para convencer a los terroristas de que están actuando equivocadamente.
+B) evitemos perjudicar a los terroristas en la misma medida en que evitaríamos perjudicar a civiles inocentes.
+C) ataquemos primero a los terroristas de menor rango.
+D) no repitamos los males del terrorismo en el proceso.</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>Answer: B) evitamos perjudicar a los terroristas en la misma medida en que evitaríamos perjudicar a civiles inocentes.</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: D</p>
+<p>Extracted Answer: B</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+¿Cuál de las siguientes capacidades es una característica de todos los organismos vivos?
+
+A) Moverse de un lugar a otro;
+B) Detectar y responder a cambios en el ambiente;
+C) Producir azúcares mediante fotosíntesis;
+D) Generar calor para mantener una temperatura interna constante.</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>La capacidad de todas las plantas para producir agua, luz y oxígeno es una característica comúnmente reconocida como la &#34;plantación de la vida&#34;.</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: B</p>
+<p>Extracted Answer: None</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+La distinción entre jurisprudencia general y particular fue reconocida por:
+
+A) Holland;
+B) Salmond;
+C) Austin;
+D) Kelsen.</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>The correct answer is D) Kelsen. Kelsen was a German jurist who made significant contributions to the field of legal theory and law. He developed the concept of &#34;jurisprudence&#34; which refers to the study of law, but he also recognized that there are certain aspects of law that are more specific than others. These areas are called &#34;general&#34; law or &#34;ordinary&#34; law. In other words, the distinction between jurisprudence general and particular is based on whether the law deals with the same or different issues.</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: C</p>
+<p>Extracted Answer: None</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    
+<h3>Prompt conversation</h3>
+
+
+<div class="message user">
+    <div class="role">
+    user
+    
+    </div>
+    <div class="content">
+    <pre>Answer the following multiple choice question. The last line of your response should be of the following format: &#39;Answer: $LETTER&#39; (without quotes) where LETTER is one of ABCD. Think step by step before answering.
+
+“Un amigo tuyo dice: ‘Cada vez que planeo unas vacaciones, siempre hay una crisis en casa o en el trabajo y no puedo ir’. Suponiendo que esto no sea realmente cierto, ¿cuál de las siguientes opciones ilustra mejor la afirmación de tu amigo?”
+
+A) Reactividad psicológica
+B) Falacia de la frecuencia base
+C) Correlación ilusoria
+D) sesgo de atribución fundamental.</pre>
+    </div>
+</div>
+
+<h3>Sampled message</h3>
+
+<div class="message assistant">
+    <div class="role">
+    assistant
+    
+    </div>
+    <div class="content">
+    <pre>Answer: B) Falacia de la frecuencia base
+
+La afirmación de tu amigo es un faláctico, porque si se considera que cada vez que planea unas vacaciones, siempre hay una crisis en casa o en el trabajo y no puede ir, entonces el faláctico se refiere a la frecuencia base, lo que significa que hay veces en las cuales algo ocurre, pero no todas las veces. Por ejemplo, si tienes que trabajar durante el día y te quedas en casa por la noche, ese es un caso de falacia de la frecuencia base.</pre>
+    </div>
+</div>
+<h3>Results</h3>
+<p>Correct Answer: C</p>
+<p>Extracted Answer: B</p>
+<p>Score: 0.0</p>
+    <hr>
+    
+    </body>
+</html>
