@@ -16,13 +16,19 @@ from .sampler.o_chat_completion_sampler import OChatCompletionSampler
 def main():
     debug = True  # Set to False to run on full MMLU set for specified language
     # Set environment variables to point to your local vLLM server
-    os.environ["OPENAI_BASE_URL"] = "http://localhost:8801/v1"
+    os.environ["OPENAI_BASE_URL"] = "http://localhost:8000/v1"
     os.environ["OPENAI_API_KEY"] = "dummy-key"  # An api key is required
 
     samplers = {
-        "my_local_qwen2": ChatCompletionSampler(
-            model="Qwen/Qwen2-0.5B-Instruct",  # model identifier for the API server
+        "local_gemma3_270m": ChatCompletionSampler(
+            model="unsloth/gemma-3-270m-it",
         ),
+        # "local_qwen2": ChatCompletionSampler(
+        #     model="Qwen/Qwen2-0.5B-Instruct",  # model identifier for the API server
+        # ),
+        # "local_oss20b": ChatCompletionSampler(
+        #     model="gpt-oss-20b",
+        # ),
 
     }
 
@@ -70,22 +76,28 @@ def main():
     print(evals)
     debug_suffix = "_DEBUG" if debug else ""
     mergekey2resultpath = {}
+
+    results_dir = "mmlu_results"  # For Google Collab, use "/content/drive/MyDrive/FOLDER_NAME"
+    os.makedirs(results_dir, exist_ok=True)
     for sampler_name, sampler in samplers.items():
         for eval_name, eval_obj in evals.items():
             result = eval_obj(sampler)
             # ^^^ how to use a sampler
             file_stem = f"{eval_name}_{sampler_name}"
-            report_filename = f"/tmp/{file_stem}{debug_suffix}.html"
+
+            report_filename = f"{results_dir}/{file_stem}{debug_suffix}.html"
             print(f"Writing report to {report_filename}")
             with open(report_filename, "w") as fh:
                 fh.write(common.make_report(result))
             metrics = result.metrics | {"score": result.score}
             print(metrics)
-            result_filename = f"/tmp/{file_stem}{debug_suffix}.json"
+            
+            result_filename = f"{results_dir}/{file_stem}{debug_suffix}.json"
             with open(result_filename, "w") as f:
                 f.write(json.dumps(metrics, indent=2))
             print(f"Writing results to {result_filename}")
             mergekey2resultpath[f"{file_stem}"] = result_filename
+
     merge_metrics = []
     for eval_sampler_name, result_filename in mergekey2resultpath.items():
         try:
