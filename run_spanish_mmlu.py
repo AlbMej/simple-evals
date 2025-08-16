@@ -19,17 +19,49 @@ def main():
     os.environ["OPENAI_BASE_URL"] = "http://localhost:8000/v1"
     os.environ["OPENAI_API_KEY"] = "dummy-key"  # An api key is required
 
+    # System prompt for Spanish. No custom channels; keep schema standard.
+    SYS_MSG_EN_FOR_ES = f"""{OPENAI_SYSTEM_MESSAGE_CHATGPT}
+    You are an expert at accurately answering multiple-choice questions. Your task is to read the user's question, which will be in Spanish, and reply ONLY with the single letter of the correct option.
+    Do not include any other words, explanation, reasoning, or punctuation. Your response must be a single letter.
+    Here is an example of a perfect interaction:
+    ---
+    USER: ¿Cuál es la capital de Francia?
+    A. Berlín
+    B. Madrid
+    C. París
+    D. Roma
+    ASSISTANT: C
+    ---
+    Now, answer the user's next question by strictly following these rules.
+    Reasoning: low"""
     samplers = {
-        "local_gemma3_270m": ChatCompletionSampler(
-            model="unsloth/gemma-3-270m-it",
-        ),
+        # "local_gemma3_270m": ChatCompletionSampler(
+        #     model="unsloth/gemma-3-270m-it",
+        # ),
         # "local_qwen2": ChatCompletionSampler(
         #     model="Qwen/Qwen2-0.5B-Instruct",  # model identifier for the API server
         # ),
         # "local_oss20b": ChatCompletionSampler(
-        #     model="gpt-oss-20b",
+        #     model="unsloth/gpt-oss-20b",
         # ),
-
+        "oss20b_low": ChatCompletionSampler(
+            model="openai/gpt-oss-20b",
+            system_message=SYS_MSG_EN_FOR_ES,
+            temperature=0.0,       # choose predicatable
+            max_tokens=4,          # enough for "A\n" etc.
+        ),
+        # "oss20b_medium": ChatCompletionSampler(
+        #     model="gpt-oss-20b",
+        #     # Add the reasoning keyword to the system message
+        #     system_message=HARMONY_PROMPT_TEMPLATE.format(system_identity=f"{OPENAI_SYSTEM_MESSAGE_CHATGPT}\nReasoning: medium"),
+        #     temperature=0.0,
+        # ),
+        # "oss20b_high": ChatCompletionSampler(
+        #     model="gpt-oss-20b",
+        #     # Add the reasoning keyword to the system message
+        #     system_message=HARMONY_PROMPT_TEMPLATE.format(system_identity=f"{OPENAI_SYSTEM_MESSAGE_CHATGPT}\nReasoning: high"),
+        #     temperature=0.0,
+        # ),
     }
 
     def get_evals(eval_name):
@@ -77,7 +109,8 @@ def main():
     debug_suffix = "_DEBUG" if debug else ""
     mergekey2resultpath = {}
 
-    results_dir = "mmlu_results"  # For Google Collab, use "/content/drive/MyDrive/FOLDER_NAME"
+    results_dir = "mmlu_results"
+    # For Google Collab, use "/content/drive/MyDrive/FOLDER_NAME"
     os.makedirs(results_dir, exist_ok=True)
     for sampler_name, sampler in samplers.items():
         for eval_name, eval_obj in evals.items():
