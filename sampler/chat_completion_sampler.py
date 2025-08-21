@@ -24,6 +24,7 @@ class ChatCompletionSampler(SamplerBase):
         system_message: str | None = None,
         temperature: float = 0.5,
         max_tokens: int = 1024,
+        max_retries: int = 5,  # A limit for retries
     ):
         self.api_key_name = "OPENAI_API_KEY"
         self.client = OpenAI()
@@ -32,6 +33,7 @@ class ChatCompletionSampler(SamplerBase):
         self.system_message = system_message
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.max_retries = max_retries
         self.image_format = "url"
 
     def _handle_image(
@@ -60,29 +62,53 @@ class ChatCompletionSampler(SamplerBase):
             message_list = [
                 self._pack_message("system", self.system_message)
             ] + message_list
+        trial = 0
+        while trial < self.max_retries:
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=message_list,
+                    temperature=self.temperature,
+                    max_tokens=self.max_tokens,
+                    tool_choice="none",           # avoid tool calls, content won’t be None
+                    timeout=60,                   # avoid hanging forever
+                )
+                msg = response.choices[0].message
+                content = msg.content
+                # If provider still returns None content, treat as a skip rather than infinite retry
+                if content is None:
+                    # log tool_calls for debugging
+                    tc = getattr(msg, "tool_calls", None)
+                    print("Warning: model returned tool call or empty content; skipping. tool_calls=", tc)
+                    return SamplerResponse(
+                        response_text="",
+                        response_metadata={"usage": response.usage},
+                        actual_queried_message_list=message_list,
+                        )
+                # If we succeed, return immediately
+                return SamplerResponse(
+                    response_text=content,
+                    response_metadata={"usage": response.usage},
+                    actual_queried_message_list=message_list,
+                )
 
-        # DELETED while loop, The client now handles retries.
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=message_list,
-                temperature=self.temperature,
-                max_tokens=self.max_tokens,
-            )
-            content = response.choices[0].message.content
-
-            # If the server successfully returns but the content is empty, we raise an error.
-            if content is None:
-                raise ValueError("OpenAI API returned a success status but with empty content.")
-
-            return SamplerResponse(
-                response_text=content,
-                response_metadata={"usage": response.usage},
-                actual_queried_message_list=message_list,
-            )
-
-        # Catch any exception that occurs after all retries have failed.
-        # We wrap it in our own exception type and raise it.
-        except Exception as e:
-            raise RuntimeError(f"OpenAI API call failed after all retries: {e}") from e
+            # NOTE: BadRequestError is triggered once for MMMU, please uncomment if you are reruning MMMU
+            except openai.BadRequestError as e:
+                print("Bad Request Error", e)
+                return SamplerResponse(
+                    response_text="No response (bad request).",
+                    response_metadata={"usage": None},
+                    actual_queried_message_list=message_list,
+                )
+            except Exception as e:
+                trial += 1
+                if trial >= self.max_retries:
+                    # If we've run out of retries, raise the final error
+                    print(f"Failed after {self.max_retries} retries. Giving up on this question.")
+                    raise RuntimeError(f"API call failed after all retries: {e}") from e
+                exception_backoff = 2**trial  # expontial back off
+                print(
+                    f"Caught error: {e}. Retrying ({trial}/{self.max_retries}) after {exception_backoff} sec..."
+                )
+                time.sleep(exception_backoff)
             # unknown error shall throw exception

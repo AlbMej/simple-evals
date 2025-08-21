@@ -19,21 +19,9 @@ def main():
     os.environ["OPENAI_BASE_URL"] = "http://localhost:8000/v1"
     os.environ["OPENAI_API_KEY"] = "dummy-key"  # An api key is required
 
-    # System prompt for Spanish. No custom channels; keep schema standard.
-    SYS_MSG_EN_FOR_ES = f"""{OPENAI_SYSTEM_MESSAGE_CHATGPT}
-    You are an expert at accurately answering multiple-choice questions. Your task is to read the user's question, which will be in Spanish, and reply ONLY with the single letter of the correct option.
-    Do not include any other words, explanation, reasoning, or punctuation. Your response must be a single letter.
-    Here is an example of a perfect interaction:
-    ---
-    USER: ¿Cuál es la capital de Francia?
-    A. Berlín
-    B. Madrid
-    C. París
-    D. Roma
-    ASSISTANT: C
-    ---
-    Now, answer the user's next question by strictly following these rules.
-    Reasoning: low"""
+    # Basic system prompt for Spanish.
+    SYS_MSG_ES = """Eres un evaluador. Responde **únicamente** con una letra: A, B, C o D.
+    No añadas explicación ni signos adicionales. Nivel de razonamiento: bajo."""
     samplers = {
         # "local_gemma3_270m": ChatCompletionSampler(
         #     model="unsloth/gemma-3-270m-it",
@@ -46,22 +34,9 @@ def main():
         # ),
         "oss20b_low": ChatCompletionSampler(
             model="openai/gpt-oss-20b",
-            system_message=SYS_MSG_EN_FOR_ES,
+            system_message=SYS_MSG_ES,
             temperature=0.0,       # choose predicatable
-            max_tokens=4,          # enough for "A\n" etc.
         ),
-        # "oss20b_medium": ChatCompletionSampler(
-        #     model="gpt-oss-20b",
-        #     # Add the reasoning keyword to the system message
-        #     system_message=HARMONY_PROMPT_TEMPLATE.format(system_identity=f"{OPENAI_SYSTEM_MESSAGE_CHATGPT}\nReasoning: medium"),
-        #     temperature=0.0,
-        # ),
-        # "oss20b_high": ChatCompletionSampler(
-        #     model="gpt-oss-20b",
-        #     # Add the reasoning keyword to the system message
-        #     system_message=HARMONY_PROMPT_TEMPLATE.format(system_identity=f"{OPENAI_SYSTEM_MESSAGE_CHATGPT}\nReasoning: high"),
-        #     temperature=0.0,
-        # ),
     }
 
     def get_evals(eval_name):
@@ -108,15 +83,22 @@ def main():
     print(evals)
     debug_suffix = "_DEBUG" if debug else ""
     mergekey2resultpath = {}
-
-    results_dir = "mmlu_results"
-    # For Google Collab, use "/content/drive/MyDrive/FOLDER_NAME"
+    # Either mmlu_results/ or specify a Google Drive folder (mount /content/drive)
+    results_dir = "/content/drive/MyDrive/Collab_MMLU_Results"  # For persistence
     os.makedirs(results_dir, exist_ok=True)
     for sampler_name, sampler in samplers.items():
         for eval_name, eval_obj in evals.items():
-            result = eval_obj(sampler)
+            result, skipped_questions = eval_obj(sampler)
             # ^^^ how to use a sampler
             file_stem = f"{eval_name}_{sampler_name}"
+
+            # --- SAVE SKIPPED QUESTIONS ---
+            if skipped_questions:  # Only write a file if there are skipped questions
+                skipped_filename = f"{results_dir}/{file_stem}{debug_suffix}_skipped.json"
+                print(f"Writing {len(skipped_questions)} skipped questions to {skipped_filename}")
+                with open(skipped_filename, "w", encoding="utf-8") as f:
+                    # Use json.dump for better handling of data structures
+                    json.dump(skipped_questions, f, indent=2, ensure_ascii=False)
 
             report_filename = f"{results_dir}/{file_stem}{debug_suffix}.html"
             print(f"Writing report to {report_filename}")
@@ -124,7 +106,7 @@ def main():
                 fh.write(common.make_report(result))
             metrics = result.metrics | {"score": result.score}
             print(metrics)
-            
+
             result_filename = f"{results_dir}/{file_stem}{debug_suffix}.json"
             with open(result_filename, "w") as f:
                 f.write(json.dumps(metrics, indent=2))

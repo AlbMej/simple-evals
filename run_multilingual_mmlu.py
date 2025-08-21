@@ -1,3 +1,4 @@
+import argparse
 import json
 
 import pandas as pd
@@ -13,6 +14,15 @@ from .sampler.o_chat_completion_sampler import OChatCompletionSampler
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Run MMLU evaluation for one or all languages.")
+    parser.add_argument(
+        "--language",
+        type=str,
+        default=None,
+        help="Optional: Specify a language code to run (e.g., EN-US, ES-LA). If unprovided, all languages will be run."
+    )
+    args = parser.parse_args()
+
     debug = True
     samplers = {
         "gpt-4o_chatgpt": ChatCompletionSampler(
@@ -80,26 +90,31 @@ def main():
             case _:
                 raise Exception(f"Unrecoginized eval type: {eval_name}")
 
-    evals = {
-        eval_name: get_evals(eval_name)
-        for eval_name in [
-            "mmlu_AR-XY",
-            "mmlu_BN-BD",
-            "mmlu_DE-DE",
-            "mmlu_EN-US",
-            "mmlu_ES-LA",
-            "mmlu_FR-FR",
-            "mmlu_HI-IN",
-            "mmlu_ID-ID",
-            "mmlu_IT-IT",
-            "mmlu_JA-JP",
-            "mmlu_KO-KR",
-            "mmlu_PT-BR",
-            "mmlu_ZH-CN",
-            "mmlu_SW-KE",
-            "mmlu_YO-NG",
-        ]
-    }
+    if args.language:
+        evals = {
+            f"mmlu_{args.language}": get_evals(f"mmlu_{args.language}")
+        }
+    else:
+        evals = {
+            eval_name: get_evals(eval_name)
+            for eval_name in [
+                "mmlu_AR-XY",
+                "mmlu_BN-BD",
+                "mmlu_DE-DE",
+                "mmlu_EN-US",
+                "mmlu_ES-LA",
+                "mmlu_FR-FR",
+                "mmlu_HI-IN",
+                "mmlu_ID-ID",
+                "mmlu_IT-IT",
+                "mmlu_JA-JP",
+                "mmlu_KO-KR",
+                "mmlu_PT-BR",
+                "mmlu_ZH-CN",
+                "mmlu_SW-KE",
+                "mmlu_YO-NG",
+            ]
+        }
     print(evals)
     debug_suffix = "_DEBUG" if debug else ""
     mergekey2resultpath = {}
