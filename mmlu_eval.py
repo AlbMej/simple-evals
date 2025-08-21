@@ -93,37 +93,69 @@ class MMLUEval(Eval):
             examples = random.Random(0).sample(examples, num_examples)
         self.examples = examples
 
-    def __call__(self, sampler: SamplerBase) -> EvalResult:
-        def fn(row: dict):
-            prompt_messages = [
-                sampler._pack_message(
-                    content=format_multichoice_question(row), role="user"
-                )
-            ]
-            sampler_response = sampler(prompt_messages)
-            response_text = sampler_response.response_text
-            actual_queried_prompt_messages = sampler_response.actual_queried_message_list
-            response_text = normalize_response(response_text)
-            extracted_answer = None
-            for answer_regex in MULTILINGUAL_ANSWER_REGEXES:
-                regex = MULTILINGUAL_ANSWER_PATTERN_TEMPLATE.format(answer_regex)
-                match = re.search(regex, response_text)
-                if match:
-                    extracted_answer = normalize_extracted_answer(match.group(1))
-                    break
-            score = 1.0 if extracted_answer == row["Answer"] else 0.0
-            html = common.jinja_env.from_string(HTML_JINJA).render(
-                prompt_messages=actual_queried_prompt_messages,
-                next_message=dict(content=response_text, role="assistant"),
-                score=score,
-                correct_answer=row["Answer"],
-                extracted_answer=extracted_answer,
-            )
-            convo = actual_queried_prompt_messages + [dict(content=response_text, role="assistant")]
-            category = subject2category.get(row["Subject"], "other")
-            return SingleEvalResult(
-                html=html, score=score, metrics={category: score}, convo=convo
-            )
+    def __call__(self, sampler: SamplerBase) -> tuple[EvalResult, list]:
+        """
+        Runs the evaluation and returns a tuple containing the 
+        aggregated EvalResult and a list of any skipped questions.
+        """
 
-        results = common.map_with_progress(fn, self.examples)
-        return common.aggregate_results(results)
+        skipped_questions = []
+
+        def fn(row: dict):
+            try:
+                prompt_messages = [
+                    sampler._pack_message(
+                        content=format_multichoice_question(row), role="user"
+                    )
+                ]
+
+                sampler_response = sampler(prompt_messages)
+
+                # Check for empty or error response from the sampler
+                if not sampler_response or not sampler_response.response_text:
+                    print(f"Warning: Empty response for row. Skipping. Row data: {row}")
+                    return None  # Signal that this row failed
+
+                response_text = sampler_response.response_text
+                actual_queried_prompt_messages = sampler_response.actual_queried_message_list
+                response_text = normalize_response(response_text)
+                extracted_answer = None
+                for answer_regex in MULTILINGUAL_ANSWER_REGEXES:
+                    regex = MULTILINGUAL_ANSWER_PATTERN_TEMPLATE.format(answer_regex)
+                    match = re.search(regex, response_text)
+                    if match:
+                        extracted_answer = normalize_extracted_answer(match.group(1))
+                        break
+                score = 1.0 if extracted_answer == row["Answer"] else 0.0
+                html = common.jinja_env.from_string(HTML_JINJA).render(
+                    prompt_messages=actual_queried_prompt_messages,
+                    next_message=dict(content=response_text, role="assistant"),
+                    score=score,
+                    correct_answer=row["Answer"],
+                    extracted_answer=extracted_answer,
+                )
+                convo = actual_queried_prompt_messages + [dict(content=response_text, role="assistant")]
+                category = subject2category.get(row["Subject"], "other")
+                return SingleEvalResult(
+                    html=html, score=score, metrics={category: score}, convo=convo
+                )
+            except Exception as e:
+                print(f"!!!!!! ERROR processing a row. Skipping. Error: {e} !!!!!!")
+                print(f"Row data: {row}")
+                return None  # Signal that this row failed
+
+        # map_with_progress will now produce a list of SingleEvalResult objects and Nones
+        results_with_nones = common.map_with_progress(fn, self.examples)
+
+        # Filter out the Nones to get successful results and collect skipped questions
+        valid_results = []
+        for i, result in enumerate(results_with_nones):
+            if result is not None:
+                valid_results.append(result)
+            else:
+                skipped_questions.append(self.examples[i])
+
+        # Aggregate only the successful results
+        aggregated_result = common.aggregate_results(valid_results)
+
+        return aggregated_result, skipped_questions
